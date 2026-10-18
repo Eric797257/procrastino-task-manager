@@ -14,7 +14,7 @@ const btnClass =
 const btnPrimaryClass =
     'inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[-#6c5ce7] bg-[#6c5ce7] px-4 py-2.5 text-white hover:bg-[#5b4bd6]';
 
-function TaskForm({ onAdd, onUpdate, editingTask, onCancelEdit }) {
+function TaskForm({ tasks, onAdd, onUpdate, editingTask, onCancelEdit }) {
     const [form, setForm] = useState(emptyForm);
     const [error, setError] = useState('');
 
@@ -54,8 +54,15 @@ function TaskForm({ onAdd, onUpdate, editingTask, onCancelEdit }) {
         if (form.deadline < getTodayDate()) {
             return setError("Deadline can't be earlier than today!");
         }
+        const title = form.title.trim();
+        const isDuplicate = tasks.some(
+            (task) =>
+                task.title.toLowerCase() === title.toLowerCase() &&
+                task.id !== editingTask?.id
+        );
+        if (isDuplicate) return setError('You already have this task. Procrastinating twice? 😏');
 
-        const data = { ...form, title: form.title.trim() };
+        const data = { ...form, title };
 
         if (editingTask) {
             onUpdate(editingTask.id, data);

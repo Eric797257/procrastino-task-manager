@@ -3,9 +3,10 @@ import TaskForm from './components/TaskForm';
 import './App.css';
 import TaskList from './components/TaskList';
 import ConfirmModal from './components/ConfirmModal';
+import { useLocalStorage } from './hooks/useLocalStorage';
 
 function App() {
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useLocalStorage('procrastino-tasks', []);
     const [editingTask, setEditingTask] = useState(null);
     const [taskToDelete, setTaskToDelete] = useState(null);
 
@@ -61,6 +62,7 @@ function App() {
 
                 <main>
                     <TaskForm
+                        tasks={tasks}
                         onAdd={addTask}
                         onUpdate={updateTask}
                         editingTask={editingTask}
