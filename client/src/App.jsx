@@ -4,6 +4,7 @@ import './App.css';
 import TaskList from './components/TaskList';
 import ConfirmModal from './components/ConfirmModal';
 import TaskFilters from './components/TaskFilters';
+import TaskStats from './components/TaskStats';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
 const defaultFilters = { search: '', status: 'all', category: 'all', sort: 'newest' };
@@ -13,6 +14,8 @@ function App() {
     const [editingTask, setEditingTask] = useState(null);
     const [taskToDelete, setTaskToDelete] = useState(null);
     const [filters, setFilters] = useState(defaultFilters);
+    const [confirmingClear, setConfirmingClear] = useState(false);
+    const completedCount = tasks.filter((task) => task.completed).length;
 
     // Derived from tasks + filters; never stored, so localStorage always keeps every task
     const search = filters.search.trim().toLowerCase();
@@ -63,6 +66,14 @@ function App() {
         setTaskToDelete(null);
     }
 
+    // CLEAR all completed tasks
+    const clearCompleted = () => {
+        setTasks((prev) => prev.filter((task) => !task.completed));
+        // editingTask is a snapshot, so check the current task's completed flag
+        if (tasks.find((task) => task.id === editingTask?.id)?.completed) setEditingTask(null);
+        setConfirmingClear(false);
+    }
+
     // COMPLETE / PENDING toggle
     const toggleTask = (id) => {
         setTasks((prev) =>
@@ -91,7 +102,10 @@ function App() {
                     />
 
                     {tasks.length > 0 && (
-                        <TaskFilters filters={filters} onChange={setFilters} />
+                        <>
+                            <TaskStats tasks={tasks} onClearCompleted={() => setConfirmingClear(true)} />
+                            <TaskFilters filters={filters} onChange={setFilters} />
+                        </>
                     )}
 
                     <TaskList
@@ -104,9 +118,22 @@ function App() {
                     />
 
                     <ConfirmModal
-                        task={taskToDelete}
+                        open={taskToDelete !== null}
+                        title="Delete this task?"
+                        message={<>“<span className="font-medium">{taskToDelete?.title}</span>” will be gone forever.</>}
+                        note="Deleting it won't make the deadline disappear 😏"
                         onConfirm={confirmDelete}
                         onCancel={() => setTaskToDelete(null)}
+                    />
+
+                    <ConfirmModal
+                        open={confirmingClear}
+                        title="Clear completed tasks?"
+                        message={`${completedCount} completed task${completedCount === 1 ? '' : 's'} will be gone forever.`}
+                        note="Enjoy the rare feeling of accomplishment 🏆"
+                        confirmLabel="Yes, clear them"
+                        onConfirm={clearCompleted}
+                        onCancel={() => setConfirmingClear(false)}
                     />
                 </main>
             </div>
