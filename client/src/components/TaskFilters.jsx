@@ -46,17 +46,29 @@ function TaskFilters({ filters, onChange }) {
                     ))}
                 </div>
 
-                <select
-                    aria-label="Filter by category"
-                    value={filters.category}
-                    onChange={(e) => update('category', e.target.value)}
-                    className={inputClass}
-                >
-                    <option value="all">All categories</option>
-                    {CATEGORIES.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                    ))}
-                </select>
+                <div className="flex gap-2">
+                    <select
+                        aria-label="Filter by category"
+                        value={filters.category}
+                        onChange={(e) => update('category', e.target.value)}
+                        className={`${inputClass} flex-1`}
+                    >
+                        <option value="all">All categories</option>
+                        {CATEGORIES.map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                        ))}
+                    </select>
+
+                    <select
+                        aria-label="Sort tasks"
+                        value={filters.sort}
+                        onChange={(e) => update('sort', e.target.value)}
+                        className={`${inputClass} flex-1`}
+                    >
+                        <option value="newest">Newest first</option>
+                        <option value="deadline">Deadline (soonest)</option>
+                    </select>
+                </div>
             </div>
         </div>
     );

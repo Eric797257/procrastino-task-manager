@@ -6,7 +6,7 @@ import ConfirmModal from './components/ConfirmModal';
 import TaskFilters from './components/TaskFilters';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
-const defaultFilters = { search: '', status: 'all', category: 'all' };
+const defaultFilters = { search: '', status: 'all', category: 'all', sort: 'newest' };
 
 function App() {
     const [tasks, setTasks] = useLocalStorage('procrastino-tasks', []);
@@ -16,12 +16,19 @@ function App() {
 
     // Derived from tasks + filters; never stored, so localStorage always keeps every task
     const search = filters.search.trim().toLowerCase();
-    const visibleTasks = tasks.filter((task) => {
-        if (filters.status === 'pending' && task.completed) return false;
-        if (filters.status === 'completed' && !task.completed) return false;
-        if (filters.category !== 'all' && task.category !== filters.category) return false;
-        return task.title.toLowerCase().includes(search);
-    });
+    const visibleTasks = tasks
+        .filter((task) => {
+            if (filters.status === 'pending' && task.completed) return false;
+            if (filters.status === 'completed' && !task.completed) return false;
+            if (filters.category !== 'all' && task.category !== filters.category) return false;
+            return task.title.toLowerCase().includes(search);
+        })
+        .sort((a, b) =>
+            // YYYY-MM-DD and ISO strings sort correctly as plain text
+            filters.sort === 'deadline'
+                ? a.deadline.localeCompare(b.deadline)
+                : b.createdAt.localeCompare(a.createdAt)
+        );
 
     // ADD
     const addTask = (data) => {
