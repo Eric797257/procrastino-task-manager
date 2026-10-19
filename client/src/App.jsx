@@ -3,12 +3,25 @@ import TaskForm from './components/TaskForm';
 import './App.css';
 import TaskList from './components/TaskList';
 import ConfirmModal from './components/ConfirmModal';
+import TaskFilters from './components/TaskFilters';
 import { useLocalStorage } from './hooks/useLocalStorage';
+
+const defaultFilters = { search: '', status: 'all', category: 'all' };
 
 function App() {
     const [tasks, setTasks] = useLocalStorage('procrastino-tasks', []);
     const [editingTask, setEditingTask] = useState(null);
     const [taskToDelete, setTaskToDelete] = useState(null);
+    const [filters, setFilters] = useState(defaultFilters);
+
+    // Derived from tasks + filters; never stored, so localStorage always keeps every task
+    const search = filters.search.trim().toLowerCase();
+    const visibleTasks = tasks.filter((task) => {
+        if (filters.status === 'pending' && task.completed) return false;
+        if (filters.status === 'completed' && !task.completed) return false;
+        if (filters.category !== 'all' && task.category !== filters.category) return false;
+        return task.title.toLowerCase().includes(search);
+    });
 
     // ADD
     const addTask = (data) => {
@@ -70,8 +83,14 @@ function App() {
                         onCancelEdit={() => setEditingTask(null)}
                     />
 
+                    {tasks.length > 0 && (
+                        <TaskFilters filters={filters} onChange={setFilters} />
+                    )}
+
                     <TaskList
-                        tasks={tasks}
+                        tasks={visibleTasks}
+                        hasAnyTasks={tasks.length > 0}
+                        onClearFilters={() => setFilters(defaultFilters)}
                         onToggle={toggleTask}
                         onDelete={requestDelete}
                         onEdit={setEditingTask}

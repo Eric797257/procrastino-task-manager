@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Plus, Save, X } from 'lucide-react';
 import { getTodayDate } from '../utils/date';
+import { CATEGORIES } from '../constants';
 
-const CATEGORIES = ['Assignment', 'Study', 'Personal', 'Other'];
 const emptyForm = { title: '', category: 'Assignment', deadline: '' };
 
 const inputClass =
