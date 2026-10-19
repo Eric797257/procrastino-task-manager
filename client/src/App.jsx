@@ -62,6 +62,7 @@ function App() {
 
                 <main>
                     <TaskForm
+                        key={editingTask?.id ?? 'new'}
                         tasks={tasks}
                         onAdd={addTask}
                         onUpdate={updateTask}
