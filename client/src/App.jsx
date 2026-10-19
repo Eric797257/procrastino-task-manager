@@ -5,6 +5,8 @@ import TaskList from './components/TaskList';
 import ConfirmModal from './components/ConfirmModal';
 import TaskFilters from './components/TaskFilters';
 import TaskStats from './components/TaskStats';
+import Header from './components/Header';
+import ExcuseGenerator from './components/ExcuseGenerator';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
 const defaultFilters = { search: '', status: 'all', category: 'all', sort: 'newest' };
@@ -84,14 +86,11 @@ function App() {
     return (
         <div className="min-h-screen bg-[#f4f5fb] text-gray-800">
             <div className="mx-auto max-w-3xl p-4">
-                <header className="mb-4 text-center">
-                    <h1 className="text-3xl font-bold">Procrastino 😂</h1>
-                    <p className="text-gray-600">
-                        The Ultimate "I'll Do It Tomorrow" Task Manager
-                    </p>
-                </header>
+                <Header />
 
                 <main>
+                    <ExcuseGenerator />
+
                     <TaskForm
                         key={editingTask?.id ?? 'new'}
                         tasks={tasks}
