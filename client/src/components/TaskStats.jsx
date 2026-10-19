@@ -2,10 +2,10 @@ import { Trash2 } from 'lucide-react';
 import { getTodayDate } from '../utils/date';
 
 function getMessage(percent) {
-    if (percent === 100) return 'All done?! Who are you and what did you do with the real you? 🎉';
-    if (percent >= 50) return 'Over halfway. Dangerously close to being productive 😳';
-    if (percent > 0) return 'A start is a start. Barely, but still 🐢';
-    return "Nothing done yet. Tomorrow, right? 😴";
+    if (percent === 100) return 'All done?! Who are you and what did you do with the real you?';
+    if (percent >= 50) return 'Over halfway. Dangerously close to being productive';
+    if (percent > 0) return 'A start is a start. Barely, but still';
+    return "Nothing done yet. Tomorrow, right?";
 }
 
 function TaskStats({ tasks, onClearCompleted }) {

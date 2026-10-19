@@ -121,7 +121,7 @@ function App() {
                         open={taskToDelete !== null}
                         title="Delete this task?"
                         message={<>“<span className="font-medium">{taskToDelete?.title}</span>” will be gone forever.</>}
-                        note="Deleting it won't make the deadline disappear 😏"
+                        note="Deleting it won't make the deadline disappear"
                         onConfirm={confirmDelete}
                         onCancel={() => setTaskToDelete(null)}
                     />
@@ -130,7 +130,7 @@ function App() {
                         open={confirmingClear}
                         title="Clear completed tasks?"
                         message={`${completedCount} completed task${completedCount === 1 ? '' : 's'} will be gone forever.`}
-                        note="Enjoy the rare feeling of accomplishment 🏆"
+                        note="Enjoy the rare feeling of accomplishment"
                         confirmLabel="Yes, clear them"
                         onConfirm={clearCompleted}
                         onCancel={() => setConfirmingClear(false)}
