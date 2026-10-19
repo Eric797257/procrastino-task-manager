@@ -1,10 +1,19 @@
 import { Check, RotateCcw, Pencil, Trash2, CalendarDays, } from 'lucide-react';
+import { getTodayDate } from '../utils/date';
 
 const actionBtn = 'cursor-pointer rounded-lg bg-gray-100 p-2 hover:bg-gray-200';
 
 function TaskItem({ task, onToggle, onDelete, onEdit }) {
+    const today = getTodayDate();
+    const isOverdue = !task.completed && task.deadline < today;
+    const isDueToday = !task.completed && task.deadline === today;
+
     return (
-        <li className="flex flex-col items-start justify-between gap-4 rounded-xl bg-white p-4 shadow-md sm:flex-row sm:items-center">
+        <li
+            className={`flex flex-col items-start justify-between gap-4 rounded-xl border-l-4 bg-white p-4 shadow-md sm:flex-row sm:items-center ${
+                isOverdue ? 'border-red-500' : isDueToday ? 'border-amber-400' : 'border-transparent'
+            }`}
+        >
             <div>
                 <h3
                     className={`mb-1.5 font-semibold ${task.completed ? 'line-through opacity-50' : ''
@@ -21,6 +30,16 @@ function TaskItem({ task, onToggle, onDelete, onEdit }) {
                         {task.deadline}
                     </span>
                     <span>{task.completed ? '✅ Completed' : '⏳ Pending'}</span>
+                    {isOverdue && (
+                        <span className="rounded-full bg-red-100 px-2 text-red-700">
+                            ⚠️ Overdue — classic you
+                        </span>
+                    )}
+                    {isDueToday && (
+                        <span className="rounded-full bg-amber-100 px-2 text-amber-700">
+                            🔥 Due today. No more excuses
+                        </span>
+                    )}
                 </p>
             </div>
 

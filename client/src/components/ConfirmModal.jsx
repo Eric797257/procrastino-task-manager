@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 
-function ConfirmModal({ task, onConfirm, onCancel }) {
+function ConfirmModal({ open, title, message, note, confirmLabel = 'Yes, delete', onConfirm, onCancel }) {
     // Close with the Escape key
     useEffect(() => {
-        if (!task) return;
+        if (!open) return;
         const handleKey = (e) => e.key === 'Escape' && onCancel();
         window.addEventListener('keydown', handleKey);
         return () => window.removeEventListener('keydown', handleKey);
-    }, [task, onCancel]);
+    }, [open, onCancel]);
 
-    if (!task) return null;
+    if (!open) return null;
 
     return (
         <div
@@ -23,15 +23,11 @@ function ConfirmModal({ task, onConfirm, onCancel }) {
             >
                 <div className="mb-3 flex items-center gap-2 text-red-600">
                     <Trash2 size={22} />
-                    <h2 className="text-lg font-semibold">Delete this task?</h2>
+                    <h2 className="text-lg font-semibold">{title}</h2>
                 </div>
 
-                <p className="mb-1 text-gray-700">
-                    “<span className="font-medium">{task.title}</span>” will be gone forever.
-                </p>
-                <p className="mb-5 text-sm text-gray-500">
-                    Deleting it won't make the deadline disappear 😏
-                </p>
+                <p className="mb-1 text-gray-700">{message}</p>
+                <p className="mb-5 text-sm text-gray-500">{note}</p>
 
                 <div className="flex justify-end gap-2">
                     <button
@@ -44,7 +40,7 @@ function ConfirmModal({ task, onConfirm, onCancel }) {
                         onClick={onConfirm}
                         className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
                     >
-                        Yes, delete
+                        {confirmLabel}
                     </button>
                 </div>
             </div>

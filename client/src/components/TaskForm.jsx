@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Save, X } from 'lucide-react';
+import { getTodayDate } from '../utils/date';
+import { CATEGORIES } from '../constants';
 
-const CATEGORIES = ['Assignment', 'Study', 'Personal', 'Other'];
 const emptyForm = { title: '', category: 'Assignment', deadline: '' };
 
 const inputClass =
@@ -12,33 +13,21 @@ const labelClass = "text-sm font-medium text-gray-400";
 const btnClass =
     'inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2.5 hover:bg-gray-50';
 const btnPrimaryClass =
-    'inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[-#6c5ce7] bg-[#6c5ce7] px-4 py-2.5 text-white hover:bg-[#5b4bd6]';
+    'inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#6c5ce7] bg-[#6c5ce7] px-4 py-2.5 text-white hover:bg-[#5b4bd6]';
 
 function TaskForm({ tasks, onAdd, onUpdate, editingTask, onCancelEdit }) {
-    const [form, setForm] = useState(emptyForm);
+    // App remounts this form (via `key`) whenever editingTask changes, so this runs fresh each time
+    const [form, setForm] = useState(() =>
+        editingTask
+            ? { title: editingTask.title, category: editingTask.category, deadline: editingTask.deadline }
+            : emptyForm
+    );
     const [error, setError] = useState('');
 
-    const getTodayDate = () => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-
-        return `${year}-${month}-${day}`;
-    }
-
-    // When the user clicks "edit", fill the form with that task
-    useEffect(() => {
-        if (editingTask) {
-            setForm({
-                title: editingTask.title,
-                category: editingTask.category,
-                deadline: editingTask.deadline,
-            })
-        } else {
-            setForm(emptyForm)
-        }
-    }, [editingTask]);
+    const today = getTodayDate();
+    // An overdue task being edited keeps its old deadline unless the user changes it
+    const keepsOldDeadline = editingTask && form.deadline === editingTask.deadline;
+    const minDeadline = keepsOldDeadline && editingTask.deadline < today ? editingTask.deadline : today;
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -51,7 +40,7 @@ function TaskForm({ tasks, onAdd, onUpdate, editingTask, onCancelEdit }) {
         if (!form.title.trim()) return setError('Task title is required 😤');
         if (!form.deadline) return setError('Pick a deadline (yes, even you)');
 
-        if (form.deadline < getTodayDate()) {
+        if (form.deadline < today && !keepsOldDeadline) {
             return setError("Deadline can't be earlier than today!");
         }
         const title = form.title.trim();
@@ -83,6 +72,7 @@ function TaskForm({ tasks, onAdd, onUpdate, editingTask, onCancelEdit }) {
             </label>
 
             <input
+                id="title"
                 type="text"
                 name="title"
                 placeholder="What are you avoiding today?"
@@ -93,11 +83,12 @@ function TaskForm({ tasks, onAdd, onUpdate, editingTask, onCancelEdit }) {
 
             <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="flex flex-1 flex-col gap-1.5">
-                    <label htmlFor="title" className={labelClass}>
-                        Task Title
+                    <label htmlFor="category" className={labelClass}>
+                        Category
                     </label>
 
                     <select
+                        id="category"
                         name="category"
                         value={form.category}
                         onChange={handleChange}
@@ -118,7 +109,7 @@ function TaskForm({ tasks, onAdd, onUpdate, editingTask, onCancelEdit }) {
                         id="deadline"
                         type="date"
                         name="deadline"
-                        min={getTodayDate()}
+                        min={minDeadline}
                         value={form.deadline}
                         onChange={handleChange}
                         className={`${inputClass} sm:flex-1`}
