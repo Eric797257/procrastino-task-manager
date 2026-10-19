@@ -11,25 +11,20 @@ export const TAGLINES = [
     'Step 1: Write the task. Step 2: Admire the task.',
 ];
 
-export const EXCUSES = [
-    'Mercury is in retrograde.',
-    'I was waiting for the right vibe.',
-    'My Wi-Fi was emotionally unavailable.',
-    "I can't start until my desk is perfectly clean.",
-    'I need a snack first. And then another snack.',
-    'It is technically still "later".',
-    'I work better under pressure. Way, way better.',
-    "I'm letting the idea marinate.",
-    'My cat sat on my keyboard. For three hours.',
-    'I was researching how to be productive.',
-    "It's not procrastination, it's strategic delay.",
-    'The deadline is more of a suggestion.',
-    'I had to reorganize my to-do list first.',
-    'My horoscope said to avoid hard work today.',
-    'I was about to start, then I looked at my phone.',
+export const ADD_TASK_MESSAGES = [
+    'Task added. Now ignore it like the others.',
+    'Great, another thing to feel guilty about.',
+    'Added! That counts as being productive, right?',
+    "Saved. We'll remind you... eventually. Maybe.",
+    'Task created. Future you is already sighing.',
+    'Nice! Writing it down is 90% of the work. Not really.',
+    'Added to the pile. The pile is growing.',
+    'Bold of you to think you will do this.',
+    'Task saved. Time for a well-earned break.',
+    'Another task? Look at you pretending to be busy.',
 ];
 
-// Random item from the list, never the same as `current` (so clicking always changes it)
+// Random item from the list, never the same as `current` (so repeats feel fresh)
 export function pickRandom(list, current) {
     const options = list.filter((item) => item !== current);
     return options[Math.floor(Math.random() * options.length)];

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import TaskForm from './components/TaskForm';
 import './App.css';
 import TaskList from './components/TaskList';
@@ -6,7 +6,8 @@ import ConfirmModal from './components/ConfirmModal';
 import TaskFilters from './components/TaskFilters';
 import TaskStats from './components/TaskStats';
 import Header from './components/Header';
-import ExcuseGenerator from './components/ExcuseGenerator';
+import Toast from './components/Toast';
+import { ADD_TASK_MESSAGES, pickRandom } from './messages';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
 const defaultFilters = { search: '', status: 'all', category: 'all', sort: 'newest' };
@@ -17,6 +18,9 @@ function App() {
     const [taskToDelete, setTaskToDelete] = useState(null);
     const [filters, setFilters] = useState(defaultFilters);
     const [confirmingClear, setConfirmingClear] = useState(false);
+    const [toast, setToast] = useState(null);
+    // Stable reference so Toast's timer isn't restarted on every render
+    const closeToast = useCallback(() => setToast(null), []);
     const completedCount = tasks.filter((task) => task.completed).length;
 
     // Derived from tasks + filters; never stored, so localStorage always keeps every task
@@ -44,6 +48,7 @@ function App() {
             createdAt: new Date().toISOString(),
         }
         setTasks((prev) => [newTask, ...prev]);
+        setToast((current) => pickRandom(ADD_TASK_MESSAGES, current));
     }
 
     // EDIT (save changes)
@@ -89,8 +94,6 @@ function App() {
                 <Header />
 
                 <main>
-                    <ExcuseGenerator />
-
                     <TaskForm
                         key={editingTask?.id ?? 'new'}
                         tasks={tasks}
@@ -134,6 +137,8 @@ function App() {
                         onConfirm={clearCompleted}
                         onCancel={() => setConfirmingClear(false)}
                     />
+
+                    <Toast message={toast} onClose={closeToast} />
                 </main>
             </div>
         </div>
