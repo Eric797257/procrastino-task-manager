@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import TaskForm from './components/TaskForm';
 import './App.css';
 import TaskList from './components/TaskList';
 import ConfirmModal from './components/ConfirmModal';
 import TaskFilters from './components/TaskFilters';
 import TaskStats from './components/TaskStats';
+import Header from './components/Header';
+import Toast from './components/Toast';
+import { ADD_TASK_MESSAGES, pickRandom } from './messages';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
 const defaultFilters = { search: '', status: 'all', category: 'all', sort: 'newest' };
@@ -15,6 +18,9 @@ function App() {
     const [taskToDelete, setTaskToDelete] = useState(null);
     const [filters, setFilters] = useState(defaultFilters);
     const [confirmingClear, setConfirmingClear] = useState(false);
+    const [toast, setToast] = useState(null);
+    // Stable reference so Toast's timer isn't restarted on every render
+    const closeToast = useCallback(() => setToast(null), []);
     const completedCount = tasks.filter((task) => task.completed).length;
 
     // Derived from tasks + filters; never stored, so localStorage always keeps every task
@@ -42,6 +48,7 @@ function App() {
             createdAt: new Date().toISOString(),
         }
         setTasks((prev) => [newTask, ...prev]);
+        setToast((current) => pickRandom(ADD_TASK_MESSAGES, current));
     }
 
     // EDIT (save changes)
@@ -84,12 +91,7 @@ function App() {
     return (
         <div className="min-h-screen bg-[#f4f5fb] text-gray-800">
             <div className="mx-auto max-w-3xl p-4">
-                <header className="mb-4 text-center">
-                    <h1 className="text-3xl font-bold">Procrastino 😂</h1>
-                    <p className="text-gray-600">
-                        The Ultimate "I'll Do It Tomorrow" Task Manager
-                    </p>
-                </header>
+                <Header />
 
                 <main>
                     <TaskForm
@@ -135,6 +137,8 @@ function App() {
                         onConfirm={clearCompleted}
                         onCancel={() => setConfirmingClear(false)}
                     />
+
+                    <Toast message={toast} onClose={closeToast} />
                 </main>
             </div>
         </div>
